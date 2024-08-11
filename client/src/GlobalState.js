@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react';
-import UserData from './components/mainpages/results/UserApi';
+import UserData from './components/mainpages/results/UserApi.js';
 
 export const GlobalState = createContext();
 
