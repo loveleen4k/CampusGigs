@@ -30,7 +30,7 @@ const applicationsCntrl = {
     getjobApplications: async (req, res) => {
         try {
             const applications = await Applications.find({ jobListing: req.params.id });
-            if(!applications) return res.status(400).json({ msg: "No applications found" });
+            if (!applications.length) return res.status(400).json({ msg: "No applications found" });
             res.json(applications);
         } catch (err) {
             return res.status(500).json({ msg: err.message });

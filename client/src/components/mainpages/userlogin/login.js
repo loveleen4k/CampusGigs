@@ -16,6 +16,7 @@ const BG = styled.div`
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState("");
 
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -27,19 +28,11 @@ const Login = () => {
           alert('Login successful');
           localStorage.setItem('accessToken', response.data.accessToken);
           window.location.href = '/';
-          // Handle successful login
       } catch (error) {
-          if (error.response) {
-              // The request was made and the server responded with a status code
-              console.error('Server Error:', error.response.data);
-          } else if (error.request) {
-              // The request was made but no response was received
-              console.error('Network Error:', error.request);
-          } else {
-              // Something else happened while setting up the request
-              console.error('Error:', error.message);
-          }
-          // Handle other errors or display an error message to the user
+              const errorMessage = error.response && error.response.data && error.response.data.msg ? error.response.data.msg : "An unexpected error occurred during signup.";
+              setError(errorMessage);
+              console.error(errorMessage);
+          
       }
   };
   
@@ -63,6 +56,7 @@ const Login = () => {
                     <Button as={Link} to={'/signup'} className='buttons' variant="secondary" >
                         New User?
                     </Button>
+                    {error && <p style={{ color: "red" , margin:"0 auto"}}>{error}</p>}
                 </Form>
             </Container>
         </BG>

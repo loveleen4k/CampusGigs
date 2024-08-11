@@ -59,8 +59,7 @@ function UserJobList() {
                                 <Card.Text>
                                     <small className="text-muted">{job.location}</small>
                                 </Card.Text>
-                                
-                                <Button variant="dark" as={Link} to={`/jobApplication/${job._id}`}>View Applications</Button>
+                                <Button variant="dark" as={Link} to={`/jobApplications/${job._id}`}>View Applications</Button>
                             </Card.Body>
                         </Card>
                     </Col>

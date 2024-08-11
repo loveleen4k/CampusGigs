@@ -33,7 +33,7 @@ function JobList() {
     const handleCategoryChange = (e) => {
         const newCategory = e.target.value;
         setSelectedCategory(newCategory);
-        navigate(`/jobs/${newCategory}`);
+       // navigate(`/jobs/${newCategory}`);
     };
 
     if (loading) {

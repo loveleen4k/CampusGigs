@@ -61,7 +61,6 @@ function ApplicationsList() {
                 applications.map(application => (
                     <div key={application._id}>
                         <p>Application ID: {application._id}</p>
-                        {/* <Link to={`/application/${application._id}`}>check details...</Link> */}
                         <p>Application Status: {application.status}</p>
                     </div>
                 ))

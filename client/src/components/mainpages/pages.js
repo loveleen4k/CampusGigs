@@ -10,6 +10,7 @@ import UpdateProfile from './forms/updateProfile.js';
 import JobList from './results/Jobs.js';
 import JobForm from './forms/HireForm.js';
 import JobApplicationForm from './forms/Apply.js';
+import JobApplicationList from './results/jobApplications.js'
 
 
 const Pages = () => {
@@ -22,7 +23,7 @@ const Pages = () => {
    <Route path="/Profile" element={<Profile/>}/>
    <Route path="/updateProfile" element={<UpdateProfile/>}/>
    <Route path="/jobs" element={<JobList/>} />
-   {/* <Route path="/jobs/:category" element={<JobList/>} /> */}
+   <Route path="/jobApplications/:jobId" element={<JobApplicationList/>} /> 
    <Route path="/hire" element={<JobForm/>}/>
    <Route path="/apply/:jobId" element={<JobApplicationForm/>} />
   
