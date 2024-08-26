@@ -1,8 +1,8 @@
 import React from 'react';
 import {Routes, Route } from 'react-router-dom';
-import Home from './homepage/home'; // Import your Home component
+import Home from './homepage/home';
 //import About from './About';
-import Profile from './results/Profile.js'; // Import your Profile component
+import Profile from './results/Profile.js'; 
 import LoginPage from './userlogin/login.js';
 import Signup from './userlogin/signup.js';
 import { DataProvider } from '../../GlobalState.js';
