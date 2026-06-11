@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const JOB_CATEGORIES = require('../constants/jobCategories.js');
 
 const jobListingSchema = new Schema({
     title: { type: String, required: true },
+    category: {
+        type: String,
+        required: true,
+        enum: JOB_CATEGORIES,
+    },
     description: { type: String, required: true },
     location: { type: String, required: true },
     requirements: { type: String },

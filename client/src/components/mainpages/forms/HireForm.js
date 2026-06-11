@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { Form, Button, Container } from 'react-bootstrap';
+import { JOB_CATEGORIES } from '../../../constants/jobCategories.js';
 
 const JobFormContainer = styled(Container)`
     max-width: 600px;
@@ -24,7 +25,8 @@ function JobForm() {
         try {
             const authToken = localStorage.getItem('accessToken');
             const newJob = {
-                title, 
+                title,
+                category,
                 description,
                 location,
                 requirements,
@@ -74,9 +76,9 @@ function JobForm() {
                         required
                     >
                         <option value="">Select Category</option>
-                        <option value="Tutor">Tutor</option>
-                        <option value="Programming">Programming</option>
-                        <option value="Internship">Internship</option>
+                        {JOB_CATEGORIES.map((cat) => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
                     </Form.Control>
                 </Form.Group>
 
