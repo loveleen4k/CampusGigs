@@ -61,8 +61,8 @@ function JobApplicationsList() {
                                 <Card.Text>
                                     <small className="text-muted">Status: {app.status}</small>
                                 </Card.Text>
-                                <Button variant="success" onClick={() => handleUpdateStatus(app._id, 'Accepted')}>Accept</Button>
-                                <Button variant="danger" onClick={() => handleUpdateStatus(app._id, 'Rejected')} className="ml-2">Reject</Button>
+                                <Button variant="success" onClick={() => handleUpdateStatus(app._id, 'accepted')}>Accept</Button>
+                                <Button variant="danger" onClick={() => handleUpdateStatus(app._id, 'rejected')} className="ml-2">Reject</Button>
                             </Card.Body>
                         </Card>
                     </Col>

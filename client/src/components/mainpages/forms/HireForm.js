@@ -41,7 +41,7 @@ function JobForm() {
     
             if (response.status === 201) {
                 alert('Job created successfully!');
-                window.location.href='/Profile';
+                window.location.href='/profile';
             } else {
                 alert('Failed to create job. Please try again.');
             }

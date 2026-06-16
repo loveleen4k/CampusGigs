@@ -38,7 +38,7 @@ function JobApplicationForm() {
             if (response.status === 201) {
                 alert('Application submitted successfully!');
                 setMessage('');
-                window.location.href = '/Profile';
+                window.location.href = '/profile';
             } else {
                 console.log(response.status, " ", response.data);
                 alert('Failed to submit application. Please try again.');
