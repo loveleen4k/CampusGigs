@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import { GlobalState } from '../../../GlobalState';
-import { getEffectiveRole } from '../../../constants/userRoles.js';
+import { EMPLOYER, getEffectiveRole } from '../../../constants/userRoles.js';
+import RoleAccessDenied from './RoleAccessDenied.js';
 
 const RoleRoute = ({ allowedRoles, children }) => {
     const { userApi } = useContext(GlobalState);
@@ -13,11 +14,12 @@ const RoleRoute = ({ allowedRoles, children }) => {
     }
 
     if (!user.email) {
-        return <div>Loading...</div>;
+        return <p className="empty-text text-center mt-4">Loading...</p>;
     }
 
     if (!allowedRoles.includes(getEffectiveRole(user.role))) {
-        return <Navigate to="/Profile" replace />;
+        const action = allowedRoles.includes(EMPLOYER) ? 'hire' : 'apply';
+        return <RoleAccessDenied action={action} />;
     }
 
     return children;

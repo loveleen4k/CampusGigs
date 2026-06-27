@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
 import { GlobalState } from '../../../GlobalState';
-import { STUDENT_EMPLOYEE, getEffectiveRole } from '../../../constants/userRoles.js';
+import { EMPLOYER, STUDENT_EMPLOYEE, getEffectiveRole } from '../../../constants/userRoles.js';
 
 
 function JobList() {
@@ -50,8 +50,17 @@ function JobList() {
     }
 
     return (
-        <Container >
-            <h2>Available Jobs</h2>
+        <Container>
+            <h2 className="heading">Available Jobs</h2>
+            {role === EMPLOYER && (
+                <p className="notice">
+                    To apply for jobs,{' '}
+                    <Link to="/Profile" state={{ roleAction: 'apply', suggestedRole: STUDENT_EMPLOYEE }}>
+                        switch to Student / Employee
+                    </Link>{' '}
+                    in your Profile.
+                </p>
+            )}
             <Form>
                 <Form.Group controlId="categorySelect">
                     <Form.Label>Filter by Category</Form.Label>
@@ -80,7 +89,7 @@ function JobList() {
                                     <small className="text-muted">{job.location}</small>
                                 </Card.Text>
                                 {role === STUDENT_EMPLOYEE && (
-                                    <Button variant="dark" as={Link} to={`/apply/${job._id}`}>Apply Now</Button>
+                                    <Button variant="dark" className="buttons m-0" as={Link} to={`/apply/${job._id}`}>Apply</Button>
                                 )}
                             </Card.Body>
                         </Card>

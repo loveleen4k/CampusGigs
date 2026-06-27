@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 const UserData = () => {
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState({});
   const authToken = localStorage.getItem('accessToken');
 
   const fetchData = async () => {
@@ -24,7 +24,8 @@ const UserData = () => {
   }, []); 
 
   return {
-    user: [user, setUser]
+    user: [user, setUser],
+    refetch: fetchData,
   };
 };
 
