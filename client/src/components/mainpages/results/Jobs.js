@@ -2,8 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
+
 import { GlobalState } from '../../../GlobalState';
 import { EMPLOYER, STUDENT_EMPLOYEE, getEffectiveRole } from '../../../constants/userRoles.js';
+
+import { JOB_CATEGORIES } from '../../../constants/jobCategories.js';
+
 
 
 function JobList() {
@@ -70,9 +74,9 @@ function JobList() {
                         onChange={handleCategoryChange}
                     >
                         <option value="">All Categories</option>
-                        <option value="Tutor">Tutor</option>
-                        <option value="Programming">Programming</option>
-                        <option value="Internship">Internship</option>
+                        {JOB_CATEGORIES.map((cat) => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
                         
                     </Form.Control>
                 </Form.Group>

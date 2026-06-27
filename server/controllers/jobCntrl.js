@@ -3,14 +3,15 @@ const JobModel=require('../models/jobModel.js');
 const jobCntrl = {
     createJob: async (req, res) => {
         try {
-            const { title, description, location, requirements, personalInfo} = req.body;
+            const { title, category, description, location, requirements, personalInfo } = req.body;
             const newJob = new JobModel({
                 title,
+                category,
                 description,
                 location,
                 requirements,
                 personalInfo,
-                createdBy:req.user.id
+                createdBy: req.user.id
             });
             await newJob.save();
             res.status(201).json(newJob.id);
@@ -40,7 +41,7 @@ const jobCntrl = {
     },
     updateJob: async (req, res) => {
         try {
-            const { title, description, location, requirements, personalInfo } = req.body;
+            const { title, category, description, location, requirements, personalInfo } = req.body;
             const job = await JobModel.findById(req.params.id);
             if (!job) return res.status(400).json({ msg: "Job does not exist." });
             if(job.createdBy.toString() !== req.user.id) return res.status(400).json({msg:"You are not authorized to update this job."});
