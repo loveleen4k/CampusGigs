@@ -1,11 +1,13 @@
 const Users = require("../models/userModel.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { USER_ROLES } = require("../constants/userRoles.js");
+const ensureUserRole = require("../utils/ensureUserRole.js");
 
 const userCntrl = {
   register: async (req, res) => {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password, role } = req.body;
       const user = await Users.findOne({ email });
       if (user)
         return res.status(400).json({ msg: "Email Already Registered." });
@@ -13,6 +15,8 @@ const userCntrl = {
         return res
           .status(400)
           .json({ msg: "Password must be at least 6 characters." });
+      if (!role || !USER_ROLES.includes(role))
+        return res.status(400).json({ msg: "Please select a valid role." });
 
       // Password encryption
       const passwordHash = await bcrypt.hash(password, 10);
@@ -21,6 +25,7 @@ const userCntrl = {
         name,
         email,
         password: passwordHash,
+        role,
       });
 
       // Save user in the database
@@ -50,6 +55,8 @@ const userCntrl = {
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ msg: "Incorrect password" });
+
+      await ensureUserRole(user);
 
       const accessToken = createAccessToken({ id: user._id });
       const refreshToken = createRefreshToken({ id: user._id });
@@ -93,6 +100,7 @@ const userCntrl = {
     try {
       const user = await Users.findById(req.user.id).select("-password");
       if (!user) return res.status(400).json({ msg: "User not found" });
+      await ensureUserRole(user);
       res.json(user);
     } catch (error) {
       return res.status(500).json({ msg: error.message });

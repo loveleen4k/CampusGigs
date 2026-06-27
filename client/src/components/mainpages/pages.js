@@ -5,17 +5,17 @@ import Home from './homepage/home';
 import Profile from './results/Profile.js'; 
 import LoginPage from './userlogin/login.js';
 import Signup from './userlogin/signup.js';
-import { DataProvider } from '../../GlobalState.js';
 import UpdateProfile from './forms/updateProfile.js';
 import JobList from './results/Jobs.js';
 import JobForm from './forms/HireForm.js';
 import JobApplicationForm from './forms/Apply.js';
-import JobApplicationList from './results/jobApplications.js'
+import JobApplicationList from './results/jobApplications.js';
+import RoleRoute from './routes/RoleRoute.js';
+import { EMPLOYER, STUDENT_EMPLOYEE } from '../../constants/userRoles.js';
 
 
 const Pages = () => {
   return (
-    <DataProvider>
     <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/login" element={<LoginPage/>}/>
@@ -23,14 +23,25 @@ const Pages = () => {
    <Route path="/Profile" element={<Profile/>}/>
    <Route path="/updateProfile" element={<UpdateProfile/>}/>
    <Route path="/jobs" element={<JobList/>} />
-   <Route path="/jobApplications/:jobId" element={<JobApplicationList/>} /> 
-   <Route path="/hire" element={<JobForm/>}/>
-   <Route path="/apply/:jobId" element={<JobApplicationForm/>} />
+   <Route path="/jobApplications/:jobId" element={
+     <RoleRoute allowedRoles={[EMPLOYER]}>
+       <JobApplicationList/>
+     </RoleRoute>
+   } />
+   <Route path="/hire" element={
+     <RoleRoute allowedRoles={[EMPLOYER]}>
+       <JobForm/>
+     </RoleRoute>
+   }/>
+   <Route path="/apply/:jobId" element={
+     <RoleRoute allowedRoles={[STUDENT_EMPLOYEE]}>
+       <JobApplicationForm/>
+     </RoleRoute>
+   } />
   
     
    
     </Routes>
-    </DataProvider>
   );
 };
 

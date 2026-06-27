@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
+import { GlobalState } from '../../../GlobalState';
+import { STUDENT_EMPLOYEE, getEffectiveRole } from '../../../constants/userRoles.js';
 
 
 function JobList() {
     const { category } = useParams();
+    const { userApi } = useContext(GlobalState);
+    const user = userApi.user[0];
+    const role = getEffectiveRole(user.role);
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -74,7 +79,9 @@ function JobList() {
                                 <Card.Text>
                                     <small className="text-muted">{job.location}</small>
                                 </Card.Text>
-                                <Button variant="dark" as={Link} to={`/apply/${job._id}`}>Apply Now</Button>
+                                {role === STUDENT_EMPLOYEE && (
+                                    <Button variant="dark" as={Link} to={`/apply/${job._id}`}>Apply Now</Button>
+                                )}
                             </Card.Body>
                         </Card>
                     </Col>

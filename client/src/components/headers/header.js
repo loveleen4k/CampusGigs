@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
@@ -9,43 +9,38 @@ import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { FaSearch } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { GlobalState } from "../../GlobalState";
+import { EMPLOYER, STUDENT_EMPLOYEE, getEffectiveRole } from "../../constants/userRoles.js";
 
 
 const Header = () => {
-  const location = useLocation();
-  let DropdownContent = null;
-  if (location.pathname == "/") {
-    DropdownContent = (
-      <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-        <NavDropdown.Item href="#hire" as={Link} to={'/hire'}>Hire</NavDropdown.Item>
-        <NavDropdown.Item href="#apply" as={Link} to={'/jobs'}>Apply</NavDropdown.Item>
-        <NavDropdown.Item as={Link} to="/jobs">
-          Jobs
-        </NavDropdown.Item>
-        <NavDropdown.Divider />
-        <NavDropdown.Item href="#about">About Us</NavDropdown.Item>
-      </NavDropdown>
-    );
-  } else {
-    DropdownContent = (
-      <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-        <NavDropdown.Item as={Link} to="/jobs">
-          Jobs
-        </NavDropdown.Item>
+  const { userApi } = useContext(GlobalState);
+  const user = userApi.user[0];
+  const role = getEffectiveRole(user.role);
+  const isEmployer = role === EMPLOYER;
+  const isStudentEmployee = role === STUDENT_EMPLOYEE;
+
+  const DropdownContent = (
+    <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+      <NavDropdown.Item as={Link} to="/jobs">
+        Jobs
+      </NavDropdown.Item>
+      {isEmployer && (
         <NavDropdown.Item as={Link} to="/hire">
           Hire
         </NavDropdown.Item>
+      )}
+      {isStudentEmployee && (
         <NavDropdown.Item as={Link} to="/jobs">
           Apply
         </NavDropdown.Item>
-        <NavDropdown.Divider />
-        <NavDropdown.Item as={Link} to="/">
-          About Us
-        </NavDropdown.Item>
-      </NavDropdown>
-    );
-  }
+      )}
+      <NavDropdown.Divider />
+      <NavDropdown.Item as={Link} to="/">
+        About Us
+      </NavDropdown.Item>
+    </NavDropdown>
+  );
 
   return (
     <Navbar

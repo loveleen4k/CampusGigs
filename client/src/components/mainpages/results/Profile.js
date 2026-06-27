@@ -6,12 +6,14 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { Link } from 'react-router-dom';
 import ApplicationsList from './UserAppsApi';
 import UserJobList from './UserJobs';
+import { EMPLOYER, STUDENT_EMPLOYEE, ROLE_LABELS, getEffectiveRole } from '../../../constants/userRoles.js';
 
 
 
 function Profile() {
     const { userApi } = useContext(GlobalState);
-    const user = userApi.user[0]; 
+    const user = userApi.user[0];
+    const role = getEffectiveRole(user.role);
     useEffect(() => {
         if (!user.email) {
            window.location.href='/login'; 
@@ -40,6 +42,7 @@ function Profile() {
                         <Card.Title>Profile Information</Card.Title>
                         <ListGroup>
                             <ListGroup.Item><strong>Email:</strong> {user.email}</ListGroup.Item>
+                            <ListGroup.Item><strong>Role:</strong> {ROLE_LABELS[role]}</ListGroup.Item>
                             {user.jobPreferences && (
                                 <ListGroup.Item><strong>Job Preferences:</strong> {user.jobPreferences.join(', ')}</ListGroup.Item>
                             )}
@@ -52,14 +55,22 @@ function Profile() {
                             <Button variant="info" className="buttons" as={Link} to={'/updateProfile'}>Update Profile</Button>
                         </div>
                         <ListGroup  className="list-group-flush">
+                        {role === STUDENT_EMPLOYEE && (
+                          <>
                         <h5 className="mt-3">Your Application:</h5>
                         <ApplicationsList/>
                         <Button className='buttons' variant="dark" as={Link} to={"/jobs"}>search for jobs</Button>
+                          </>
+                        )}
                         </ListGroup>
                         <ListGroup  className="list-group-flush">
+                        {role === EMPLOYER && (
+                          <>
                         <h5 className="mt-3">Your Job Listings:</h5>
                         <UserJobList/>
                         <Button className='buttons' variant="dark" as={Link} to={"/hire"}>create a job listing</Button>
+                          </>
+                        )}
                         </ListGroup>
                     </Card.Body>
                     </Card>

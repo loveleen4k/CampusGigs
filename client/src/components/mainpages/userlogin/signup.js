@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
+import { USER_ROLES, ROLE_LABELS } from "../../../constants/userRoles.js";
 
 const BG = styled.div`
   width: 100vw;
@@ -17,6 +18,7 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
@@ -26,6 +28,7 @@ const Signup = () => {
         name,
         email,
         password,
+        role,
       });
       console.log("Signup successful:", response.data);
       window.location.href = "/login";
@@ -80,6 +83,22 @@ const Signup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formGroupRole">
+            <Form.Label>I am a</Form.Label>
+            <Form.Control
+              as="select"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="">Select role</option>
+              {USER_ROLES.map((userRole) => (
+                <option key={userRole} value={userRole}>
+                  {ROLE_LABELS[userRole]}
+                </option>
+              ))}
+            </Form.Control>
           </Form.Group>
           <Button className="buttons" variant="primary" type="submit">
             Submit
