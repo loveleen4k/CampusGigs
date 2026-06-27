@@ -1,11 +1,15 @@
 const Users = require("../models/userModel.js");
+const JobModel = require("../models/jobModel.js");
+const Applications = require("../models/ApplicationModel.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { USER_ROLES, EMPLOYER, STUDENT_EMPLOYEE } = require("../constants/userRoles.js");
+const ensureUserRole = require("../utils/ensureUserRole.js");
 
 const userCntrl = {
   register: async (req, res) => {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password, role } = req.body;
       const user = await Users.findOne({ email });
       if (user)
         return res.status(400).json({ msg: "Email Already Registered." });
@@ -13,6 +17,8 @@ const userCntrl = {
         return res
           .status(400)
           .json({ msg: "Password must be at least 6 characters." });
+      if (!role || !USER_ROLES.includes(role))
+        return res.status(400).json({ msg: "Please select a valid role." });
 
       // Password encryption
       const passwordHash = await bcrypt.hash(password, 10);
@@ -21,6 +27,7 @@ const userCntrl = {
         name,
         email,
         password: passwordHash,
+        role,
       });
 
       // Save user in the database
@@ -50,6 +57,8 @@ const userCntrl = {
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ msg: "Incorrect password" });
+
+      await ensureUserRole(user);
 
       const accessToken = createAccessToken({ id: user._id });
       const refreshToken = createRefreshToken({ id: user._id });
@@ -93,6 +102,7 @@ const userCntrl = {
     try {
       const user = await Users.findById(req.user.id).select("-password");
       if (!user) return res.status(400).json({ msg: "User not found" });
+      await ensureUserRole(user);
       res.json(user);
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -112,6 +122,50 @@ const userCntrl = {
         return res.status(404).json({ msg: "User not found" });
       }
       res.json({msg: updatedUser});
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  updateRole: async (req, res) => {
+    try {
+      const { role } = req.body;
+      if (!role || !USER_ROLES.includes(role)) {
+        return res.status(400).json({ msg: "Please select a valid role." });
+      }
+
+      const user = await Users.findById(req.user.id);
+      if (!user) return res.status(400).json({ msg: "User not found" });
+      await ensureUserRole(user);
+
+      if (user.role === role) {
+        return res.status(400).json({ msg: "You are already using this role." });
+      }
+
+      if (user.role === EMPLOYER && role === STUDENT_EMPLOYEE) {
+        const jobCount = await JobModel.countDocuments({ createdBy: user._id });
+        if (jobCount > 0) {
+          return res.status(400).json({
+            msg: `You have ${jobCount} active job listing${jobCount === 1 ? "" : "s"}. Please delete all your job listings before switching to Student / Employee.`,
+            jobCount,
+          });
+        }
+      }
+
+      if (user.role === STUDENT_EMPLOYEE && role === EMPLOYER) {
+        const applicationCount = await Applications.countDocuments({ user: user._id });
+        if (applicationCount > 0) {
+          return res.status(400).json({
+            msg: `You have ${applicationCount} active application${applicationCount === 1 ? "" : "s"}. Please delete all your applications before switching to Employer.`,
+            applicationCount,
+          });
+        }
+      }
+
+      user.role = role;
+      await user.save();
+
+      const updatedUser = await Users.findById(user._id).select("-password");
+      res.json({ msg: "Role updated successfully.", user: updatedUser });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }

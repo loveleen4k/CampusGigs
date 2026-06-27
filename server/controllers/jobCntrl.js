@@ -62,7 +62,6 @@ const jobCntrl = {
             try {
                 const userId = req.params.id;
                 const jobs = await JobModel.find({ createdBy: userId });
-                if (!jobs.length) return res.status(400).json({ msg: "No jobs found" });
                 res.json(jobs);
             } catch (err) {
                 return res.status(500).json({ msg: err.message });

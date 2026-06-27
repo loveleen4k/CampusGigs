@@ -12,7 +12,12 @@ function JobApplicationsList() {
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/applications/jobApplications/${jobId}`);
+                const authToken = localStorage.getItem('accessToken');
+                const res = await axios.get(`http://localhost:5000/applications/jobApplications/${jobId}`, {
+                    headers: {
+                        Authorization: authToken,
+                    },
+                });
                 console.log(res.data);
                 setApplications(res.data);
                 setLoading(false);
@@ -28,7 +33,12 @@ function JobApplicationsList() {
 
     const handleUpdateStatus = async (appId, status) => {
         try {
-            await axios.put(`http://localhost:5000/applications/update/${appId}`, { status });
+            const authToken = localStorage.getItem('accessToken');
+            await axios.put(`http://localhost:5000/applications/update/${appId}`, { status }, {
+                headers: {
+                    Authorization: authToken,
+                },
+            });
             setApplications(applications.map(app => 
                 app._id === appId ? { ...app, status } : app
             ));

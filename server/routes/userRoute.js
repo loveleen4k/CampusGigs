@@ -8,6 +8,7 @@ router.get('/logout', userCntrl.logout);
 router.post('/refreshtoken', userCntrl.refreshtoken);
 router.get('/infor',auth,userCntrl.getUser);
 router.put('/update',auth,userCntrl.update);
+router.put('/role', auth, userCntrl.updateRole);
 router.delete('/delete',auth,userCntrl.delete);
 
 module.exports = router;

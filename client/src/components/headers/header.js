@@ -9,43 +9,27 @@ import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { FaSearch } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
 
 
 const Header = () => {
-  const location = useLocation();
-  let DropdownContent = null;
-  if (location.pathname == "/") {
-    DropdownContent = (
-      <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-        <NavDropdown.Item href="#hire" as={Link} to={'/hire'}>Hire</NavDropdown.Item>
-        <NavDropdown.Item href="#apply" as={Link} to={'/jobs'}>Apply</NavDropdown.Item>
-        <NavDropdown.Item as={Link} to="/jobs">
-          Jobs
-        </NavDropdown.Item>
-        <NavDropdown.Divider />
-        <NavDropdown.Item href="#about">About Us</NavDropdown.Item>
-      </NavDropdown>
-    );
-  } else {
-    DropdownContent = (
-      <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-        <NavDropdown.Item as={Link} to="/jobs">
-          Jobs
-        </NavDropdown.Item>
-        <NavDropdown.Item as={Link} to="/hire">
-          Hire
-        </NavDropdown.Item>
-        <NavDropdown.Item as={Link} to="/jobs">
-          Apply
-        </NavDropdown.Item>
-        <NavDropdown.Divider />
-        <NavDropdown.Item as={Link} to="/">
-          About Us
-        </NavDropdown.Item>
-      </NavDropdown>
-    );
-  }
+
+  const DropdownContent = (
+    <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+      <NavDropdown.Item as={Link} to="/jobs">
+        Jobs
+      </NavDropdown.Item>
+      <NavDropdown.Item as={Link} to="/hire">
+        Hire
+      </NavDropdown.Item>
+      <NavDropdown.Item as={Link} to="/jobs">
+        Apply
+      </NavDropdown.Item>
+      <NavDropdown.Divider />
+      <NavDropdown.Item as={Link} to="/">
+        About Us
+      </NavDropdown.Item>
+    </NavDropdown>
+  );
 
   return (
     <Navbar

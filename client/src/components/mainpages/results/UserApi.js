@@ -24,7 +24,8 @@ const UserData = () => {
   }, []); 
 
   return {
-    user: [user, setUser]
+    user: [user, setUser],
+    refetch: fetchData,
   };
 };
 
