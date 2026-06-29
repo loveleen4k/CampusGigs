@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Button } from 'react-bootstrap';
 import { GlobalState } from '../../../GlobalState';
 
 function ApplicationsList({ onApplicationsChanged }) {
@@ -65,9 +64,22 @@ function ApplicationsList({ onApplicationsChanged }) {
 
     return (
         <>
-            {applications.map((application) => (
+            {applications.map((application) => {
+                const job = application.jobListing;
+                const jobTitle = job?.title || 'Job no longer available';
+                const jobMeta = job
+                    ? `${job.category} · ${job.location}`
+                    : null;
+
+                return (
                 <div key={application._id} className="list-item-minimal">
-                    <p>Status · {application.status || 'pending'}</p>
+                    <div>
+                        <p style={{ color: 'white', marginBottom: '0.25rem' }}>{jobTitle}</p>
+                        <p>
+                            {jobMeta && <>{jobMeta} · </>}
+                            Status · {application.status || 'pending'}
+                        </p>
+                    </div>
                     <button
                         type="button"
                         className="btn-minimal btn-minimal-danger"
@@ -77,7 +89,8 @@ function ApplicationsList({ onApplicationsChanged }) {
                         {deletingId === application._id ? 'Deleting...' : 'Delete'}
                     </button>
                 </div>
-            ))}
+                );
+            })}
         </>
     );
 }
