@@ -18,6 +18,11 @@ const serializeApplication = (application) => {
     };
 };
 
+const findPopulatedApplication = (id) =>
+    Applications.findById(id)
+        .populate('user', 'name email skills jobPreferences')
+        .populate('jobListing', 'title category location');
+
 const applicationsCntrl = {
     createApplication: async (req, res) => {
         try {
@@ -69,24 +74,20 @@ const applicationsCntrl = {
             const currentStatus = normalizeStatus(req.application.status);
 
             if (normalizedStatus === currentStatus) {
+                const application = await findPopulatedApplication(req.application._id);
                 return res.json({
                     msg: 'Application status is already up to date.',
-                    application: serializeApplication(req.application),
+                    application: serializeApplication(application),
                 });
             }
 
             const now = new Date();
-            const updatedApplication = await Applications.findByIdAndUpdate(
-                req.application._id,
-                {
-                    status: normalizedStatus,
-                    statusUpdatedAt: now,
-                    $push: { statusHistory: { status: normalizedStatus, updatedAt: now } },
-                },
-                { new: true }
-            )
-                .populate('user', 'name email skills jobPreferences')
-                .populate('jobListing', 'title category location');
+            await Applications.findByIdAndUpdate(req.application._id, {
+                status: normalizedStatus,
+                statusUpdatedAt: now,
+                $push: { statusHistory: { status: normalizedStatus, updatedAt: now } },
+            });
+            const updatedApplication = await findPopulatedApplication(req.application._id);
 
             res.json({
                 msg: 'Application status updated successfully.',
