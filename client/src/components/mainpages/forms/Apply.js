@@ -36,7 +36,7 @@ function JobApplicationForm() {
             });
     
             if (response.status === 201) {
-                alert('Application submitted successfully!');
+                alert('Application submitted! Track its status anytime from your Profile.');
                 setMessage('');
                 window.location.href = '/profile';
             } else {

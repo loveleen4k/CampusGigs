@@ -40,7 +40,7 @@ It is designed to simulate a real-world job portal system with focus on:
 - 🔐 User authentication with JWT  
 - 👤 Role-based access (users/admin)  
 - 📄 Job listing and application system  
-- 📊 Application tracking  
+- 📊 Application status tracking (submitted → review → interview → decision)
 - 🔄 RESTful API integration  
 - 📱 Responsive UI for multiple devices  
 

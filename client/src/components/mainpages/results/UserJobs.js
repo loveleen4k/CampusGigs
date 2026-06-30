@@ -2,12 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { GlobalState } from '../../../GlobalState';
 import { Link } from 'react-router-dom';
+import { ACTIVE_STATUSES, normalizeStatus } from '../../../constants/applicationStatuses';
 
 
 function UserJobList({ onJobsChanged }) {
     const { userApi } = useContext(GlobalState);
     const user = userApi.user[0]; 
     const [jobs, setJobs] = useState([]);
+    const [applicationCounts, setApplicationCounts] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
@@ -21,6 +23,28 @@ function UserJobList({ onJobsChanged }) {
                 headers: { Authorization: authToken },
             });
             setJobs(res.data);
+
+            const counts = {};
+            await Promise.all(
+                res.data.map(async (job) => {
+                    try {
+                        const appsRes = await axios.get(
+                            `http://localhost:5000/applications/jobApplications/${job._id}`,
+                            { headers: { Authorization: authToken } }
+                        );
+                        const apps = appsRes.data;
+                        counts[job._id] = {
+                            total: apps.length,
+                            active: apps.filter((app) =>
+                                ACTIVE_STATUSES.includes(normalizeStatus(app.status))
+                            ).length,
+                        };
+                    } catch {
+                        counts[job._id] = { total: 0, active: 0 };
+                    }
+                })
+            );
+            setApplicationCounts(counts);
             setLoading(false);
         } catch (err) {
             setError(err.response?.data?.msg || 'Failed to fetch user jobs');
@@ -60,11 +84,20 @@ function UserJobList({ onJobsChanged }) {
                 <div key={job._id} className="list-item-minimal">
                     <div>
                         <p style={{ color: 'white', marginBottom: '0.25rem' }}>{job.title}</p>
-                        <p>{job.category} · {job.location}</p>
+                        <p>
+                            {job.category} · {job.location}
+                            {applicationCounts[job._id]?.total > 0 && (
+                                <> · {applicationCounts[job._id].total} applicant{applicationCounts[job._id].total === 1 ? '' : 's'}
+                                {applicationCounts[job._id].active > 0 && (
+                                    <> · {applicationCounts[job._id].active} in progress</>
+                                )}
+                                </>
+                            )}
+                        </p>
                     </div>
                     <div className="d-flex gap-2 flex-wrap">
                         <Link to={`/jobApplications/${job._id}`} className="btn-minimal">
-                            Applications
+                            Manage status
                         </Link>
                         <button
                             type="button"

@@ -1,15 +1,40 @@
 const Applications = require('../models/ApplicationModel.js');
+const {
+    normalizeStatus,
+    isValidStatus,
+} = require('../constants/applicationStatuses.js');
 
-const VALID_STATUSES = ['pending', 'accepted', 'rejected'];
+const serializeApplication = (application) => {
+    const doc = application.toObject ? application.toObject() : application;
+    const status = normalizeStatus(doc.status);
+
+    return {
+        ...doc,
+        status,
+        statusHistory: (doc.statusHistory || []).map((entry) => ({
+            ...entry,
+            status: normalizeStatus(entry.status),
+        })),
+    };
+};
+
+const findPopulatedApplication = (id) =>
+    Applications.findById(id)
+        .populate('user', 'name email skills jobPreferences')
+        .populate('jobListing', 'title category location');
 
 const applicationsCntrl = {
     createApplication: async (req, res) => {
         try {
             const { message } = req.body;
+            const now = new Date();
             const newApplication = new Applications({
                 user: req.user.id,
                 jobListing: req.job._id,
                 message,
+                status: 'submitted',
+                statusUpdatedAt: now,
+                statusHistory: [{ status: 'submitted', updatedAt: now }],
             });
             await newApplication.save();
             res.status(201).json({ msg: 'Application submitted successfully' });
@@ -23,15 +48,17 @@ const applicationsCntrl = {
             const applications = await Applications.find({ user: req.user.id })
                 .populate('jobListing', 'title category location')
                 .sort({ submittedAt: -1 });
-            res.json(applications);
+            res.json(applications.map(serializeApplication));
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
     },
     getjobApplications: async (req, res) => {
         try {
-            const applications = await Applications.find({ jobListing: req.job._id });
-            res.json(applications);
+            const applications = await Applications.find({ jobListing: req.job._id })
+                .populate('user', 'name email skills jobPreferences')
+                .sort({ submittedAt: -1 });
+            res.json(applications.map(serializeApplication));
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
@@ -39,11 +66,33 @@ const applicationsCntrl = {
     updateApplication: async (req, res) => {
         try {
             const { status } = req.body;
-            if (!status || !VALID_STATUSES.includes(status)) {
-                return res.status(400).json({ msg: 'Please provide a valid status.' });
+            if (!status || !isValidStatus(status)) {
+                return res.status(400).json({ msg: 'Please provide a valid application status.' });
             }
-            await Applications.findOneAndUpdate({ _id: req.application._id }, { status });
-            res.json({ msg: 'Application updated successfully' });
+
+            const normalizedStatus = normalizeStatus(status);
+            const currentStatus = normalizeStatus(req.application.status);
+
+            if (normalizedStatus === currentStatus) {
+                const application = await findPopulatedApplication(req.application._id);
+                return res.json({
+                    msg: 'Application status is already up to date.',
+                    application: serializeApplication(application),
+                });
+            }
+
+            const now = new Date();
+            await Applications.findByIdAndUpdate(req.application._id, {
+                status: normalizedStatus,
+                statusUpdatedAt: now,
+                $push: { statusHistory: { status: normalizedStatus, updatedAt: now } },
+            });
+            const updatedApplication = await findPopulatedApplication(req.application._id);
+
+            res.json({
+                msg: 'Application status updated successfully.',
+                application: serializeApplication(updatedApplication),
+            });
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }

@@ -158,7 +158,10 @@ function Profile() {
 
                         {role === STUDENT_EMPLOYEE && (
                             <>
-                                <p className="section-label">Applications</p>
+                                <p className="section-label">Application status tracking</p>
+                                <p className="empty-text mb-3">
+                                    Follow each application from submission through review, interview, and final decision.
+                                </p>
                                 <ApplicationsList onApplicationsChanged={refetch}/>
                                 <Button className="buttons" variant="dark" as={Link} to="/jobs">Browse jobs</Button>
                             </>
